@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative Art Piece with Enhanced Glitch Effects</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #111;
+            color: #fff;
+            overflow: hidden;
+            margin: 0;
+        }
+        canvas:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+    <script>
+        let img;
+        let invertColors = false;
+        let hoverEffect = false;
+        let colorChange = false;
+        let clickEffect = false;
+
+        function preload() {
+            // Manually load the image here
+            img = loadImage('https://static.unisat.io/content/9d69c4497b49ab36060b683ab4fa4504aaede78d46abbf3fe4cae55a6c442219i0'); // Replace with the path to your image
+        }
+
+        function setup() {
+            createCanvas(390, 390);
+            noStroke();
+            frameRate(15);
+            setInterval(() => {
+                invertColors = !invertColors;
+            }, 200); // Toggle color inversion every 200ms for a more rapid effect
+        }
+
+        function draw() {
+            blendMode(BLEND);
+            background(0);
+
+            if (img) {
+                // Draw the image with glitch effects
+                let aspectRatio = img.width / img.height;
+                let imgWidth = 390;
+                let imgHeight = 390 / aspectRatio;
+                if (imgHeight < 390) {
+                    imgHeight = 390;
+                    imgWidth = 390 * aspectRatio;
+                }
+
+                // Apply color inversion
+                if (invertColors) {
+                    filter(INVERT);
+                }
+
+                // Apply hover effect for color change
+                if (hoverEffect) {
+                    if (colorChange) {
+                        tint(0, 255, 0); // Change to green when hovering
+                    } else {
+                        tint(255, 165, 0); // Change to orange when hovering
+                    }
+                } else if (clickEffect) {
+                    tint(255, 255, 0); // Change to yellow when clicked
+                } else {
+                    noTint();
+                }
+
+                // Draw the image
+                image(img, 0, 0, imgWidth, imgHeight);
+
+                // Glitch effect by copying parts of the image
+                for (let i = 0; i < 20; i++) { // Increased number of glitch lines
+                    let x = random(width);
+                    let y = random(height);
+                    let w = random(10, 150); // Increased width range for more pronounced glitches
+                    let h = random(5, 30); // Increased height range for more pronounced glitches
+                    copy(x, y, w, h, x + random(-30, 30), y + random(-15, 15), w, h);
+                }
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(390, 390);
+        }
+
+        function mouseMoved() {
+            hoverEffect = true;
+            colorChange = !colorChange; // Toggle between orange and green when hovering
+        }
+
+        function mouseOut() {
+            hoverEffect = false;
+            clickEffect = false; // Reset click effect when the mouse leaves the canvas
+        }
+
+        function mousePressed() {
+            clickEffect = true;
+        }
+
+        function mouseReleased() {
+            clickEffect = false;
+        }
+    </script>
+</body>
+</html>
